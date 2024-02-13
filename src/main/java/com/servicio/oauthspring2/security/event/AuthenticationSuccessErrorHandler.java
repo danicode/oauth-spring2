@@ -67,7 +67,7 @@ public class AuthenticationSuccessErrorHandler implements AuthenticationEventPub
 
             errors.append(" - Intentos del login: " + usuario.getIntentos());
 
-            if(usuario.getIntentos() >= 3) {
+            if (usuario.getIntentos() >= 3) {
                 String errorMaxIntentos = String.format("El usuario %s des-habilitado por máximos intentos.", usuario.getUsername());
                 log.error(errorMaxIntentos);
                 errors.append(" - " + errorMaxIntentos);
