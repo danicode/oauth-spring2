@@ -1,5 +1,6 @@
 package com.servicio.oauthspring2.security.event;
 
+import brave.Tracer;
 import com.servicio.commons.usuarios.models.entity.Usuario;
 import com.servicio.oauthspring2.services.IUsuarioService;
 import org.slf4j.Logger;
@@ -21,6 +22,9 @@ public class AuthenticationSuccessErrorHandler implements AuthenticationEventPub
 
     @Autowired
     private IUsuarioService usuarioService;
+
+    @Autowired
+    private Tracer tracer;
 
     @Override
     public void publishAuthenticationSuccess(Authentication authentication) {
@@ -75,6 +79,8 @@ public class AuthenticationSuccessErrorHandler implements AuthenticationEventPub
             }
 
             usuarioService.update(usuario, usuario.getId());
+
+            tracer.currentSpan().tag("error.message", errors.toString());
 
         } catch (FeignException e) {
             log.error(String.format("El usuario %s no existe en el sistema", authentication.getName()));

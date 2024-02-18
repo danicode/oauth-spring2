@@ -1,5 +1,6 @@
 package com.servicio.oauthspring2.services;
 
+import brave.Tracer;
 import com.servicio.commons.usuarios.models.entity.Usuario;
 import com.servicio.oauthspring2.clients.UsuarioFeignClient;
 import feign.FeignException;
@@ -25,6 +26,9 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
     @Autowired
     private UsuarioFeignClient client;
 
+    @Autowired
+    private Tracer tracer;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -43,7 +47,7 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
         } catch (FeignException e) {
             String error = "Error en el login, no existe el usuario '" + username + "' en el sistema";
             log.error(error);
-
+            tracer.currentSpan().tag("error.message", error + ": " + e.getMessage());
             throw new UsernameNotFoundException(error);
         }
     }
